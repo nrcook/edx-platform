@@ -1590,7 +1590,15 @@ class CourseEnrollment(models.Model):
         return cls.objects.filter(user=user, is_active=1).select_related('user')
 
     @classmethod
-    def enrollments_for_user_with_overviews_preload(cls, user):  # pylint: disable=invalid-name
+    def get_dashboard_course_limit(cls):
+        config = DashboardConfiguration.current()
+        if config:
+            return config.course_limit
+
+        return None
+
+    @classmethod
+    def enrollments_for_user_with_overviews_preload(cls, user, load_all_courses=False):  # pylint: disable=invalid-name
         """
         List of user's CourseEnrollments, CourseOverviews preloaded if possible.
 
@@ -1605,7 +1613,13 @@ class CourseEnrollment(models.Model):
         The name of this method is long, but was the end result of hashing out a
         number of alternatives, so pylint can stuff it (disable=invalid-name)
         """
+
         enrollments = list(cls.enrollments_for_user(user))
+        if not load_all_courses:
+            courses_count = cls.get_dashboard_course_limit()
+            if courses_count:
+                enrollments = list(cls.enrollments_for_user(user).order_by('-created'))[:courses_count]
+
         overviews = CourseOverview.get_from_ids_if_exists(
             enrollment.course_id for enrollment in enrollments
         )
@@ -2390,6 +2404,10 @@ class DashboardConfiguration(ConfigurationModel):
         default=0,
         help_text="The number of seconds in which a new enrollment is considered 'recent'. "
                   "Used to display notifications."
+    )
+    course_limit = models.PositiveIntegerField(
+        default=250,
+        help_text="Number of courses to show on dashboard"
     )
 
     @property

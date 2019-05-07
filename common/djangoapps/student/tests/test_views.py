@@ -573,6 +573,25 @@ class StudentDashboardTests(SharedModuleStoreTestCase, MilestonesTestCaseMixin, 
             self.assertIn('You are not enrolled in any courses yet.', response.content)
             self.assertIn(empty_dashboard_message, response.content)
 
+    @patch('student.models.CourseEnrollment.get_dashboard_course_limit')
+    def test_course_limit_on_dashboard(self, mock_course_limit):
+
+        mock_course_limit.return_value = 1
+        course = CourseFactory.create()
+        CourseEnrollmentFactory(
+            user=self.user,
+            course_id=course.id
+        )
+
+        course_v1 = CourseFactory.create()
+        CourseEnrollmentFactory(
+            user=self.user,
+            course_id=course_v1.id
+        )
+
+        response = self.client.get(reverse('dashboard'))
+        self.assertIn('1 results successfully populated', response.content)
+
     @staticmethod
     def _remove_whitespace_from_html_string(html):
         return ''.join(html.split())
