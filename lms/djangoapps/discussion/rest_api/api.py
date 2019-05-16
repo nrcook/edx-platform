@@ -50,6 +50,7 @@ from openedx.core.djangoapps.django_comment_common.signals import (
     thread_voted
 )
 from openedx.core.djangoapps.django_comment_common.utils import get_course_discussion_settings
+from openedx.core.djangoapps.user_api.accounts.api import get_account_settings
 from openedx.core.djangoapps.user_api.accounts.views import AccountViewSet
 from openedx.core.lib.exceptions import CourseNotFoundError, DiscussionNotFoundError, PageNotFoundError
 
@@ -353,10 +354,7 @@ def _get_user_profile_dict(request, usernames):
 
         A dict with username as key and user profile details as value.
     """
-    request.GET = request.GET.copy()  # Make a mutable copy of the GET parameters.
-    request.GET['username'] = usernames
-    user_profile_details = AccountViewSet.as_view({'get': 'list'})(request).data
-
+    user_profile_details = get_account_settings(request, usernames.split(","))
     return {user['username']: user for user in user_profile_details}
 
 
