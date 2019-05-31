@@ -301,7 +301,8 @@ class BaseCourseEnrollmentTestsMixin(ProgramCacheTestCaseMixin):
         self.program_uuid = uuid4()
         self.organization_key = "orgkey"
         self.program = self.setup_catalog_cache(self.program_uuid, self.organization_key)
-        self.course = self.program["courses"][0]
+        curriculum = next(c for c in self.program['curricula'] if c['is_active'])
+        self.course = curriculum['courses'][0]
         self.course_run = self.course["course_runs"][0]
         self.course_key = CourseKey.from_string(self.course_run["key"])
         CourseOverviewFactory(id=self.course_key)
