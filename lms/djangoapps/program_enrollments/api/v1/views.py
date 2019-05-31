@@ -85,7 +85,7 @@ def verify_course_exists_and_in_program(view_func):
         in the wrapped function is not part of the curriculum of the program
         specified by the `program_uuid` kwarg
 
-    Assumes that the program exists
+    Assumes that the program exists and that a program has exactly one active curriculum
     """
     @wraps(view_func)
     @verify_course_exists

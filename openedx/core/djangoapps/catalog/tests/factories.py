@@ -234,6 +234,7 @@ class CurriculumFactory(DictFactoryBase):
     courses = factory.LazyFunction(partial(generate_instances, CourseFactory))
     programs = []
 
+
 class ProgramTypeFactory(DictFactoryBase):
     name = factory.Faker('word')
     logo_image = factory.LazyFunction(generate_sized_stdimage)
