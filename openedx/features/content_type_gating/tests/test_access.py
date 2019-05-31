@@ -531,10 +531,10 @@ class TestProblemTypeAccess(SharedModuleStoreTestCase):
         )
 
     @ddt.data(
-        ('problem', 'graded_problem', 'audit', 404),
-        ('problem', 'graded_problem', 'verified', 200),
         ('problem', 'ungraded_problem', 'audit', 200),
         ('problem', 'ungraded_problem', 'verified', 200),
+        ('problem', 'graded_problem', 'audit', 404),
+        ('problem', 'graded_problem', 'verified', 200),
     )
     @ddt.unpack
     def test_xblock_handlers(self, xblock_type, xblock_name, user, status_code):
